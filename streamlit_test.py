@@ -97,6 +97,6 @@ my_slot2.line_chart(data)
 #Functions in streamlit
 # Plot coordinate on a map
 map_data = pd.DataFrame(
-    np.random.randn(1000, 2) / [50, 50] + [45.45, 85.43],
+    np.random.randn(1000, 2) / [50, 50] + [25.04, 121.32],
     columns=['latitude', 'longitude'])
 st.map(map_data)
