@@ -2,10 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import requests
-import psycopg2
 import psycopg2.extras
 import plotly.graph_objects as go
-import json
 from FinMind.data import DataLoader
 import matplotlib.pyplot as plt
 
