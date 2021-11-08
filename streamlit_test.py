@@ -66,3 +66,10 @@ st.write('你出生為西元', x+1911, "年")
 with st.spinner('Wait for it...'):
     time.sleep(10)
 st.success('Done!')
+
+st.text('More example of streamlit progress widgets')
+
+st.spinner()
+with st.spinner(text='Download in progress!!!'):
+    time.sleep(5)
+st.success('Done')
