@@ -64,7 +64,7 @@ st.write('你出生為西元', x+1911, "年")
 
 # spinner
 with st.spinner('Wait for it...'):
-    time.sleep(10)
+    time.sleep(5)
 st.success('Done!')
 
 st.text('More example of streamlit progress widgets')
@@ -73,3 +73,30 @@ st.spinner()
 with st.spinner(text='Download in progress!!!'):
     time.sleep(5)
 st.success('Done')
+
+# Draw celebratory balloons
+st.balloons()
+st.write('Process bar widget')
+my_bar = st.progress(0)
+for p in range(100):
+    time.sleep(0.1)
+    my_bar.progress(p+1)
+
+# Appends some text to the application
+data = np.random.randn(10, 3)
+my_slot1 = st.empty()
+# Appends an empty slot to the app. We'll use this later.
+my_slot2 = st.empty()
+# Appends another empty slot.
+st.text('This will appear last')
+# Appends some more text to the app.
+my_slot1.text('This will appear second')
+# Replaces the first empty slot with a text string.
+my_slot2.line_chart(data)
+
+#Functions in streamlit
+# Plot coordinate on a map
+map_data = pd.DataFrame(
+    np.random.randn(1000, 2) / [50, 50] + [45.45, 85.43],
+    columns=['latitude', 'longitude'])
+st.map(map_data)
