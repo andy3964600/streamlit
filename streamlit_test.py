@@ -64,21 +64,21 @@ st.write('你出生為西元', x+1911, "年")
 
 # spinner
 with st.spinner('Wait for it...'):
-    time.sleep(5)
+    time.sleep(2)
 st.success('Done!')
 
 st.text('More example of streamlit progress widgets')
 
 st.spinner()
 with st.spinner(text='Download in progress!!!'):
-    time.sleep(5)
+    time.sleep(2)
 st.success('Done')
 
 # Draw celebratory balloons
 st.balloons()
 st.write('Process bar widget')
 my_bar = st.progress(0)
-for p in range(100):
+for p in range(20):
     time.sleep(0.1)
     my_bar.progress(p+1)
 
@@ -97,6 +97,6 @@ my_slot2.line_chart(data)
 #Functions in streamlit
 # Plot coordinate on a map
 map_data = pd.DataFrame(
-    np.random.randn(1000, 2) / [50, 50] + [25.04, 121.32],
+    np.random.randn(1000, 2) / [50, 50] + [25.04, 121.55],
     columns=['latitude', 'longitude'])
 st.map(map_data)
