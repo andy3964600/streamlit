@@ -99,4 +99,4 @@ my_slot2.line_chart(data)
 map_data = pd.DataFrame(
     np.random.randn(1000, 2) / [50, 50] + [25.04, 121.55],
     columns=['latitude', 'longitude'])
-st.map(map_data)
+st.map(map_data, zoom=10)
