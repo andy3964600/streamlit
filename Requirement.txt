@@ -6,5 +6,5 @@ numpy
 yfinance
 datetime
 seaborn
-matplotlib.pyplot
+matplotlib
 mpl_finance
