@@ -1,0 +1,11 @@
+streamlit
+pandas
+plotly
+psycopg2
+numpy
+yfinance
+talib
+datetime
+seaborn
+matplotlib.pyplot
+mpl_finance
