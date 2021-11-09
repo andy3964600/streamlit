@@ -57,4 +57,5 @@ if option == 'stock_id':
     # ax.legend()
     #st.subheader('這是 %s' % tickerSymbol + ' 的5MA+10MA+30MA+的Kbar :')
     # st.pyplot(fig)
+    st.subheader('這是 %s' % tickerSymbol + ' 的Raw Data :')
     st.dataframe(tickerDF)
