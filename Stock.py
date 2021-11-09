@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from FinMind.data import DataLoader
 import matplotlib.pyplot as plt
-
+import yfinance as yf
 st.title('My Stock Data Search')
 st.sidebar.title(' Option')
 
@@ -21,14 +20,10 @@ if option == 'twitter':
 if option == 'Kbar':
     st.subheader('This is Kbar')
 if option == 'stock_id':
-    stock_no = st.sidebar.text_input('Stocknumber', max_chars=5)
-    dl = DataLoader()
-    stock_data = dl.taiwan_stock_daily(stock_id=stock_no, start_date='2021-01-01')
-    st.write(stock_data)
-    x_months = [i for i in range(1, 207)]
-    y_sale = [x for x in stock_data['close']]
-    plt.plot(x_months, y_sale, color="g")
-    plt.xlabel('date')
-    plt.ylabel('close $ in TSD')
-    plt.grid(True)
-    st.pyplot(fig=plt)
+    tickerSymbol = st.sidebar.text_input(
+        "Please in put your stock_ID(ex: xxxx.TW in Taiwan, XXXX in America)", value='MSFT', max_chars=None, key=None, type='default')
+    st.subheader('This is %s' % tickerSymbol + ' line_chart :')
+    tickerData = yf.Ticker(tickerSymbol)
+    tickerDF = tickerData.history(period='1d', start='2021-01-01')
+    st.line_chart(tickerDF.Close)
+    st.line_chart(tickerDF.Volume)
