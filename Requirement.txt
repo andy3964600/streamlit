@@ -4,7 +4,6 @@ plotly
 psycopg2
 numpy
 yfinance
-talib
 datetime
 seaborn
 matplotlib.pyplot
