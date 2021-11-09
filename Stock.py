@@ -1,4 +1,4 @@
-import talib
+
 import datetime as datetime
 import seaborn as sns
 import streamlit as st
