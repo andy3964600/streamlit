@@ -24,5 +24,7 @@ if option == 'stock_id':
     st.subheader('This is %s' % tickerSymbol + ' line_chart :')
     tickerData = yf.Ticker(tickerSymbol)
     tickerDF = tickerData.history(period='1d', start='2021-01-01')
+    st.subheader('這是 %s' % tickerSymbol + ' 的收盤價圖 :')
     st.line_chart(tickerDF.Close)
+    st.subheader('這是 %s' % tickerSymbol + ' 的成交量圖 :')
     st.line_chart(tickerDF.Volume)
