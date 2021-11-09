@@ -4,7 +4,7 @@ plotly
 psycopg2
 numpy
 yfinance
-talib
+TA_Lib-0.4.21-cp38-cp38-win_amd64
 datetime
 seaborn
 matplotlib.pyplot
