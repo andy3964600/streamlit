@@ -7,3 +7,4 @@ seaborn
 matplotlib
 mpl_finance
 tabib
+ta
