@@ -56,16 +56,16 @@ st.header(f"DataFrame!\n {company_name}")
 st.write(tickerDF.tail())
 # KBar
 st.header(f"KBar\n {company_name}")
-tickerDF.index = tickerDF.index.format(formatter=lambda x: x.strftime('%Y-%m-%d'))
+# tickerDF.index = tickerDF.index.format(formatter=lambda x: x.strftime('%Y-%m-%d'))
 
-fig = plt.figure(figsize=(32, 15), dpi=160)
+# fig = plt.figure(figsize=(32, 15), dpi=160)
 
-ax = fig.add_subplot(1, 1, 1)
-ax.set_xticks(range(0, len(tickerDF.index), 10))
-ax.set_xticklabels(tickerDF.index[::10], rotation=90)
-mpf.candlestick2_ochl(ax, tickerDF['Open'], tickerDF['Close'], tickerDF['High'],
-                      tickerDF['Low'], width=0.6, colorup='r', colordown='g', alpha=0.6)
-st.pyplot(fig)
+# ax = fig.add_subplot(1, 1, 1)
+# ax.set_xticks(range(0, len(tickerDF.index), 10))
+# ax.set_xticklabels(tickerDF.index[::10], rotation=90)
+# mpf.candlestick2_ochl(ax, tickerDF['Open'], tickerDF['Close'], tickerDF['High'],
+# tickerDF['Low'], width = 0.6, colorup = 'r', colordown = 'g', alpha = 0.6)
+# st.pyplot(fig)
 # Bollinger Bands
 st.header(f"Bollinger Bands\n {company_name}")
 qf = cf.QuantFig(tickerDF, title='BB For 20MA', legend='top', name='GS')
@@ -128,48 +128,48 @@ testPredictPlot = np.empty_like(df1)
 testPredictPlot[:, :] = np.nan
 testPredictPlot[len(train_predict)+(look_back*2)+1:len(df1)-1, :] = test_predict
 # plot baseline and predictions
-figg = plt
+fig = plt
 plt.plot(scaler.inverse_transform(df1))
 plt.plot(trainPredictPlot)
 plt.plot(testPredictPlot)
 plt.show()
 st.header(f"After learning, the learning result..(green and orange line)\n {company_name}")
-st.pyplot(figg)
+st.pyplot(fig)
 # demonstrate prediction for next 10 days
-#st.write('Now, Calculate to prediction for next 10 days... plz wait')
-#x_input = test_data[len(test_data-100):].reshape(1, -1)
-#temp_input = list(x_input)
-#temp_input = temp_input[0].tolist()
-#lst_output = []
-#n_steps = 100
-#i = 0
+# st.write('Now, Calculate to prediction for next 10 days... plz wait')
+# x_input = test_data[len(test_data-100):].reshape(1, -1)
+# temp_input = list(x_input)
+# temp_input = temp_input[0].tolist()
+# lst_output = []
+# n_steps = 100
+# i = 0
 ##
 # while(i < 30):
 # if(len(temp_input) > 100):
 # print(temp_input)
-#x_input = np.array(temp_input[1:])
-#x_input = x_input.reshape(1, -1)
-#x_input = x_input.reshape((1, n_steps, 1))
+# x_input = np.array(temp_input[1:])
+# x_input = x_input.reshape(1, -1)
+# x_input = x_input.reshape((1, n_steps, 1))
 # print(x_input)
-#yhat = model.predict(x_input, verbose=0)
+# yhat = model.predict(x_input, verbose=0)
 # temp_input.extend(yhat[0].tolist())
-#temp_input = temp_input[1:]
+# temp_input = temp_input[1:]
 # print(temp_input)
 # lst_output.extend(yhat.tolist())
-#i = i+1
+# i = i+1
 # else:
-#x_input = x_input.reshape((1, n_steps, 1))
-#yhat = model.predict(x_input, verbose=0)
+# x_input = x_input.reshape((1, n_steps, 1))
+# yhat = model.predict(x_input, verbose=0)
 # temp_input.extend(yhat[0].tolist())
 # lst_output.extend(yhat.tolist())
-#i = i+1
-#day_new = np.arange(1, 101)
-#day_pred = np.arange(101, 131)
-#df3 = df1.tolist()
+# i = i+1
+# day_new = np.arange(1, 101)
+# day_pred = np.arange(101, 131)
+# df3 = df1.tolist()
 # df3.extend(lst_output)
-#st.header(f"The error rate\n {company_name}")
+# st.header(f"The error rate\n {company_name}")
 # st.line_chart(df3[1200:])
 # plt.plot(df3[1200:])
-#df3 = scaler.inverse_transform(df3).tolist()
-#st.header(f"The prediction of close\n {company_name}")
+# df3 = scaler.inverse_transform(df3).tolist()
+# st.header(f"The prediction of close\n {company_name}")
 # st.line_chart(df3)
