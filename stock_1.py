@@ -112,7 +112,7 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 model.summary()
 st.write('Training......')
 model.fit(X_train, y_train, validation_data=(
-    X_test, ytest), epochs=50, batch_size=64, verbose=1)
+    X_test, ytest), epochs=80, batch_size=64, verbose=1)
 st.write('Model fitting is done...')
 train_predict = model.predict(X_train)
 test_predict = model.predict(X_test)
