@@ -16,7 +16,7 @@ yf.pdr_override()
 
 st.write("""
 # DAS(Data Analysis Stock) Overview
-Shown below are the **Close**, **Volume**, **KBar**, **BB** , **Deeplearning LSTM training result**, **Pridiction 10 days!** of yours input!
+Shown below are the **MA**, **BB**, **MACD**, **CCI**,**KBar**, **Close**, **Volume** and **RSI** of yours input!
 """)
 
 st.sidebar.header('**Options**')
@@ -27,7 +27,7 @@ today = datetime.date.today()
 
 def User_input():
     ticker = st.sidebar.text_input("Ticker", '2376.TW')
-    start_date = st.sidebar.date_input("Start date", datetime.date(2015, 1, 1))
+    start_date = st.sidebar.date_input("Start date", datetime.date(2019, 1, 1))
     end_date = st.sidebar.date_input("End date", datetime.date(2021, 11, 10))
     return ticker, start_date, end_date
 
@@ -112,7 +112,7 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 model.summary()
 st.write('Training......')
 model.fit(X_train, y_train, validation_data=(
-    X_test, ytest), epochs=100, batch_size=64, verbose=1)
+    X_test, ytest), epochs=50, batch_size=64, verbose=1)
 st.write('Model fitting is done...')
 train_predict = model.predict(X_train)
 test_predict = model.predict(X_test)
@@ -136,39 +136,40 @@ plt.show()
 st.header(f"After learning, the learning result..(green and orange line)\n {company_name}")
 st.pyplot(figg)
 # demonstrate prediction for next 10 days
-st.write('Now, Calculate to prediction for next 10 days... plz wait')
-x_input = test_data[len(test_data-100):].reshape(1, -1)
-temp_input = list(x_input)
-temp_input = temp_input[0].tolist()
-lst_output = []
-n_steps = 100
-i = 0
-while(i < 30):
-    if(len(temp_input) > 100):
-        # print(temp_input)
-        x_input = np.array(temp_input[1:])
-        x_input = x_input.reshape(1, -1)
-        x_input = x_input.reshape((1, n_steps, 1))
-        # print(x_input)
-        yhat = model.predict(x_input, verbose=0)
-        temp_input.extend(yhat[0].tolist())
-        temp_input = temp_input[1:]
-        # print(temp_input)
-        lst_output.extend(yhat.tolist())
-        i = i+1
-    else:
-        x_input = x_input.reshape((1, n_steps, 1))
-        yhat = model.predict(x_input, verbose=0)
-        temp_input.extend(yhat[0].tolist())
-        lst_output.extend(yhat.tolist())
-        i = i+1
-day_new = np.arange(1, 101)
-day_pred = np.arange(101, 131)
-df3 = df1.tolist()
-df3.extend(lst_output)
-st.header(f"The error rate\n {company_name}")
-st.line_chart(df3[1200:])
-plt.plot(df3[1200:])
-df3 = scaler.inverse_transform(df3).tolist()
-st.header(f"The prediction of close\n {company_name}")
-st.line_chart(df3)
+#st.write('Now, Calculate to prediction for next 10 days... plz wait')
+#x_input = test_data[len(test_data-100):].reshape(1, -1)
+#temp_input = list(x_input)
+#temp_input = temp_input[0].tolist()
+#lst_output = []
+#n_steps = 100
+#i = 0
+##
+# while(i < 30):
+# if(len(temp_input) > 100):
+# print(temp_input)
+#x_input = np.array(temp_input[1:])
+#x_input = x_input.reshape(1, -1)
+#x_input = x_input.reshape((1, n_steps, 1))
+# print(x_input)
+#yhat = model.predict(x_input, verbose=0)
+# temp_input.extend(yhat[0].tolist())
+#temp_input = temp_input[1:]
+# print(temp_input)
+# lst_output.extend(yhat.tolist())
+#i = i+1
+# else:
+#x_input = x_input.reshape((1, n_steps, 1))
+#yhat = model.predict(x_input, verbose=0)
+# temp_input.extend(yhat[0].tolist())
+# lst_output.extend(yhat.tolist())
+#i = i+1
+#day_new = np.arange(1, 101)
+#day_pred = np.arange(101, 131)
+#df3 = df1.tolist()
+# df3.extend(lst_output)
+#st.header(f"The error rate\n {company_name}")
+# st.line_chart(df3[1200:])
+# plt.plot(df3[1200:])
+#df3 = scaler.inverse_transform(df3).tolist()
+#st.header(f"The prediction of close\n {company_name}")
+# st.line_chart(df3)

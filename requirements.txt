@@ -5,7 +5,7 @@ yfinance
 datetime
 matplotlib
 cufflinks
-mpl_finance
+mplfinance
 sklearn
 tensorflow
 keras
