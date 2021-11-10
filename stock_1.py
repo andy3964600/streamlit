@@ -16,7 +16,7 @@ yf.pdr_override()
 
 st.write("""
 # DAS(Data Analysis Stock) Overview
-Shown below are the **MA**, **BB**, **MACD**, **CCI**,**KBar**, **Close**, **Volume** and **RSI** of yours input!
+Shown below are the **Close**, **Volume**, **KBar**, **BB** , **Deeplearning LSTM training result**, **Pridiction 10 days!** of yours input!
 """)
 
 st.sidebar.header('**Options**')
@@ -27,7 +27,7 @@ today = datetime.date.today()
 
 def User_input():
     ticker = st.sidebar.text_input("Ticker", '2376.TW')
-    start_date = st.sidebar.date_input("Start date", datetime.date(2016, 1, 1))
+    start_date = st.sidebar.date_input("Start date", datetime.date(2015, 1, 1))
     end_date = st.sidebar.date_input("End date", datetime.date(2021, 11, 10))
     return ticker, start_date, end_date
 
