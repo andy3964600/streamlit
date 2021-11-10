@@ -3,7 +3,7 @@ import streamlit as st
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
-import mpl_finance as mpf
+import cufflinks as cf
 yf.pdr_override()
 
 st.write("""
@@ -19,8 +19,8 @@ today = datetime.date.today()
 
 def User_input():
     ticker = st.sidebar.text_input("Ticker", 'AAPL')
-    start_date = st.sidebar.text_input("Start Date", '2020-01-01')
-    end_date = st.sidebar.text_input("End Date", f'{today}')
+    start_date = st.sidebar.date_input("Start date", datetime.date(2019, 1, 1))
+    end_date = st.sidebar.date_input("End date", datetime.date(2021, 11, 10))
     return ticker, start_date, end_date
 
 
@@ -41,9 +41,12 @@ st.header(f"Adjusted Close Price\n {company_name}")
 st.line_chart(data['Adj Close'])
 
 # Volume
+st.header(f"Adjusted Close Price\n {company_name}")
 st.bar_chart(tickerDF.Volume)
 
-
+# dataframe
+st.header(f"DataFrame!\n {company_name}")
+st.write(tickerDF)
 # KBar
 st.header(f"KBar\n {company_name}")
 tickerDF.index = tickerDF.index.format(formatter=lambda x: x.strftime('%Y-%m-%d'))
@@ -58,7 +61,11 @@ mpf.candlestick2_ochl(ax, tickerDF['Open'], tickerDF['Close'], tickerDF['High'],
                       tickerDF['Low'], width=0.6, colorup='r', colordown='g', alpha=0.6)
 st.pyplot(fig)
 # Bollinger Bands
-
+st.header('**Bollinger Bands**')
+qf = cf.QuantFig(tickerDF, title='BB For 20MA', legend='top', name='GS')
+qf.add_bollinger_bands()
+fig = qf.iplot(asFigure=True)
+st.plotly_chart(fig)
 
 # Plot
 
