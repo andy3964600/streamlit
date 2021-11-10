@@ -1,10 +1,10 @@
 streamlit
 pandas
+plotly
+psycopg2
 numpy
 yfinance
 datetime
 seaborn
 matplotlib
 mpl_finance
-tabib
-ta
