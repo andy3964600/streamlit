@@ -4,6 +4,7 @@ import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import cufflinks as cf
+import mpl_finance as mpf
 yf.pdr_override()
 
 st.write("""
