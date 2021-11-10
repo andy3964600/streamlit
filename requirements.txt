@@ -6,3 +6,7 @@ datetime
 matplotlib
 cufflinks
 mpl_finance
+sklearn
+tensorflow
+keras
+math
