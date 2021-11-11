@@ -179,11 +179,10 @@ if option == 'Start_Analysis_DL':
 
     day_new = np.arange(1, 101)
     day_pred = np.arange(101, 131)
-
+    st.write('Your next 10 day stock close price in predicion 30 day')
     dff = plt
     dff.plot(day_new, scaler.inverse_transform(df1[len(df1)-100:]))
     dff.plot(day_pred, scaler.inverse_transform(lst_output))
-    st.write('Your next 10 day stock close price in predicion 30 day')
     st.write(scaler.inverse_transform(lst_output))
     st.pyplot(dff)
 
