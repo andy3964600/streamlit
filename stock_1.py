@@ -136,7 +136,7 @@ if option == 'DL(LSTM) Prediction For 1 week':
     testPredictPlot[:, :] = np.nan
     testPredictPlot[len(train_predict)+(look_back*2)+1:len(df1)-1, :] = test_predict
     # plot baseline and predictions
-    st.header(f"Your trained model for validation\n {company_name}")
+    st.header(f"Your trained model for validation : \n {company_name}")
     fig = plt
     plt.title('Model')
     plt.xlabel('Date')
@@ -149,8 +149,6 @@ if option == 'DL(LSTM) Prediction For 1 week':
     st.pyplot(fig)
     plt.clf()
     # demonstrate prediction for next 10 days
-    st.write(len(test_data))
-    st.write('Now, Calculate to prediction for next 30 days... plz wait')
     x_input = test_data[len(test_data)-30:].reshape(1, -1)
 
     temp_input = list(x_input)
@@ -187,7 +185,6 @@ if option == 'DL(LSTM) Prediction For 1 week':
     day_pred = np.arange(31, 36)
     st.header(f"The prediction in 5 days : \n {company_name}")
     dff = plt
-    st.header('Your next 5 day stock close price')
     dff.title('Model')
     dff.xlabel('Date')
     dff.ylabel('Close Price TWD ($)')
@@ -265,7 +262,7 @@ if option == 'DL(LSTM) Prediction For 1 month':
     testPredictPlot[:, :] = np.nan
     testPredictPlot[len(train_predict)+(look_back*2)+1:len(df1)-1, :] = test_predict
     # plot baseline and predictions
-    st.header(f"Your trained model for validation\n {company_name}")
+    st.header(f"Your trained model for validation :\n {company_name}")
     fig = plt
     plt.xlabel('Date')
     plt.ylabel('Close Price TWD ($)')
@@ -277,8 +274,6 @@ if option == 'DL(LSTM) Prediction For 1 month':
     st.pyplot(fig)
     plt.clf()
     # demonstrate prediction for next 10 days
-    st.write(len(test_data))
-    st.write('Now, Calculate to prediction for next 30 days... plz wait')
     x_input = test_data[len(test_data)-100:].reshape(1, -1)
 
     temp_input = list(x_input)
@@ -328,5 +323,5 @@ if option == 'DL(LSTM) Prediction For 1 month':
     st.line_chart(df3[1200:])
 
     df3 = scaler.inverse_transform(df3).tolist()
-    st.header(f"Combine the real data and prediction data\n {company_name}")
+    st.header(f"Combine the real data and prediction data :\n {company_name}")
     st.line_chart(df3)
