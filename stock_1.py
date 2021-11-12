@@ -12,16 +12,13 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 from sklearn.metrics import mean_squared_error
 yf.pdr_override()
+plt.style.use('seaborn')
 
-st.write("""
-# DAS(Data Analysis Stock) Overview
-Shown below are the **BB**, **KBar**, **Close**, **Volume** of yours input!
-""")
 
 st.sidebar.header('**Options**')
 today = datetime.date.today()
 option = st.sidebar.selectbox(
-    "Deeplearning", ('Tech_Analysis', 'Start_Analysis_DL'))
+    "Deeplearning", ('Tech_Analysis', 'DL(LSTM) Prediction For 1 week', 'DL(LSTM) Prediction For 1 month'))
 # take 3d inofrmation
 
 
@@ -41,8 +38,11 @@ start = pd.to_datetime(start)
 end = pd.to_datetime(end)
 # Read data
 data = yf.download(symbol, start, end)
-st.write(data)
 if option == 'Tech_Analysis':
+    st.title("""
+    # DAS(Data Analysis Stock) Overview
+    Shown below are the **BB**, **KBar**, **Close**, **Volume** of yours input!
+    """)
 
     # Adjusted Close Price
     st.header(f"Adjusted Close Price\n {company_name}")
@@ -59,7 +59,7 @@ if option == 'Tech_Analysis':
     st.header(f"KBar\n {company_name}")
     data.index = data.index.format(formatter=lambda x: x.strftime('%Y-%m-%d'))
 
-    KF = plt.figure(figsize=(32, 15), dpi=160)
+    KF = plt.figure(figsize=(16, 8))
 
     ax = KF.add_subplot(1, 1, 1)
     ax.set_xticks(range(0, len(data.index), 10))
@@ -74,8 +74,10 @@ if option == 'Tech_Analysis':
     fig = qf.iplot(asFigure=True)
     st.plotly_chart(fig)
 
-if option == 'Start_Analysis_DL':
-    st.text('*Calculating the Deeplearning for prediction the stock close....Plz wait*')
+if option == 'DL(LSTM) Prediction For 1 week':
+    st.title("""
+    DL model(LSTM) Prediction for 1 week
+    """)
 # Predict forecast with Prophet.
     df1 = data.reset_index()['Close']
 
@@ -87,7 +89,136 @@ if option == 'Start_Analysis_DL':
     st.write(df1.shape)
 # splitting dataset into train and test split
 # train_set
-    training_size = int(len(df1)*0.65)
+    training_size = int(len(df1) * 0.75)
+# test_ser
+    test_size = len(df1)-training_size
+
+# reset the df1 (upper = train, else = test, time series)
+    train_data, test_data = df1[0:training_size, :], df1[training_size:len(df1), :1]
+
+    def create_dataset(dataset, time_step=1):
+        dataX, dataY = [], []
+        for i in range(len(dataset)-time_step-1):
+            a = dataset[i:(i+time_step), 0]  # i=0, 0,1,2,3-----99   100
+            dataX.append(a)
+            dataY.append(dataset[i + time_step, 0])
+        return np.array(dataX), np.array(dataY)
+
+    # reshape into X=t,t+1,t+2,t+3 and Y=t+4
+    time_step = 30
+    X_train, y_train = create_dataset(train_data, time_step)
+    X_test, ytest = create_dataset(test_data, time_step)
+# reshape input to be [samples, time steps, features] which is required for LSTM
+    X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
+    X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
+    model = Sequential()
+    model.add(LSTM(50, return_sequences=True, input_shape=(30, 1)))
+    model.add(LSTM(50, return_sequences=True))
+    model.add(LSTM(50))
+    model.add(Dense(1))
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    model.summary()
+    st.write('Training the model....')
+    model.fit(X_train, y_train, validation_data=(
+        X_test, ytest), epochs=100, batch_size=64, verbose=1)
+    st.write('Model fitting is done...')
+    train_predict = model.predict(X_train)
+    test_predict = model.predict(X_test)
+    # Transformback to original form
+    train_predict = scaler.inverse_transform(train_predict)
+    test_predict = scaler.inverse_transform(test_predict)
+    look_back = 30
+    trainPredictPlot = np.empty_like(df1)
+    trainPredictPlot[:, :] = np.nan
+    trainPredictPlot[look_back:len(train_predict)+look_back, :] = train_predict
+    # shift test predictions for plotting
+    testPredictPlot = np.empty_like(df1)
+    testPredictPlot[:, :] = np.nan
+    testPredictPlot[len(train_predict)+(look_back*2)+1:len(df1)-1, :] = test_predict
+    # plot baseline and predictions
+    st.header(f"Your trained model for validation\n {company_name}")
+    fig = plt
+    plt.title('Model')
+    plt.xlabel('Date')
+    plt.ylabel('Close Price TWD ($)')
+    plt.legend(['Train', 'Validaition'], loc='upper left')
+    plt.plot(scaler.inverse_transform(df1))
+    plt.plot(trainPredictPlot)
+    plt.plot(testPredictPlot)
+    plt.show()
+    st.pyplot(fig)
+    plt.clf()
+    # demonstrate prediction for next 10 days
+    st.write(len(test_data))
+    st.write('Now, Calculate to prediction for next 10 days... plz wait')
+    x_input = test_data[len(test_data)-30:].reshape(1, -1)
+
+    temp_input = list(x_input)
+    temp_input = temp_input[0].tolist()
+
+    lst_output = []
+    n_steps = 30
+    i = 0
+    while(i < 5):
+        if(len(temp_input) > 30):
+         # print(temp_input)
+            x_input = np.array(temp_input[1:])
+            print("{} day input {}".format(i, x_input))
+            x_input = x_input.reshape(1, -1)
+            x_input = x_input.reshape((1, n_steps, 1))
+         # print(x_input)
+            yhat = model.predict(x_input, verbose=0)
+            print("{} day output {}".format(i, yhat))
+            temp_input.extend(yhat[0].tolist())
+            temp_input = temp_input[1:]
+         # print(temp_input)
+            lst_output.extend(yhat.tolist())
+            i = i+1
+        else:
+            x_input = x_input.reshape((1, n_steps, 1))
+            yhat = model.predict(x_input, verbose=0)
+            print(yhat[0])
+            temp_input.extend(yhat[0].tolist())
+            print(len(temp_input))
+            lst_output.extend(yhat.tolist())
+            i = i+1
+
+    day_new = np.arange(1, 31)
+    day_pred = np.arange(31, 36)
+    dff = plt
+    st.header('Your next 5 day stock close price')
+    dff.title('Model')
+    dff.xlabel('Date')
+    dff.ylabel('Close Price TWD ($)')
+    dff.plot(day_new, scaler.inverse_transform(df1[len(df1)-30:]))
+    dff.plot(day_pred, scaler.inverse_transform(lst_output))
+    dff.legend(['Train', 'Predictions'], loc='upper left')
+    st.write(scaler.inverse_transform(lst_output))
+    st.pyplot(dff)
+    st.header(f"The orange line is your prediction for 5 days\n {company_name}")
+    df3 = df1.tolist()
+    df3.extend(lst_output)
+    st.line_chart(df3[1200:])
+
+    df3 = scaler.inverse_transform(df3).tolist()
+    st.header(f"Combine the real data and prediction data\n {company_name}")
+    st.line_chart(df3)
+if option == 'DL(LSTM) Prediction For 1 month':
+    st.title("""
+    DL model(LSTM) Prediction for 1 month
+    """)
+# Predict forecast with Prophet.
+    df1 = data.reset_index()['Close']
+
+
+# LSTM are sensitive to the scale of the data
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    df1 = scaler.fit_transform(np.array(df1).reshape(-1, 1))
+    st.write('Your numbers of train_set of data')
+    st.write(df1.shape)
+# splitting dataset into train and test split
+# train_set
+    training_size = int(len(df1)*0.8)
 # test_ser
     test_size = len(df1)-training_size
 
@@ -110,9 +241,9 @@ if option == 'Start_Analysis_DL':
     X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
     X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
     model = Sequential()
-    model.add(LSTM(50, return_sequences=True, input_shape=(100, 1)))
-    model.add(LSTM(50, return_sequences=True))
-    model.add(LSTM(50))
+    model.add(LSTM(80, return_sequences=True, input_shape=(100, 1)))
+    model.add(LSTM(80, return_sequences=True))
+    model.add(LSTM(80))
     model.add(Dense(1))
     model.compile(loss='mean_squared_error', optimizer='adam')
     model.summary()
@@ -134,13 +265,15 @@ if option == 'Start_Analysis_DL':
     testPredictPlot[:, :] = np.nan
     testPredictPlot[len(train_predict)+(look_back*2)+1:len(df1)-1, :] = test_predict
     # plot baseline and predictions
+    st.header(f"Your trained model for validation\n {company_name}")
     fig = plt
+    plt.xlabel('Date')
+    plt.ylabel('Close Price TWD ($)')
+    plt.legend(['Train', 'Validaition'], loc='upper left')
     plt.plot(scaler.inverse_transform(df1))
     plt.plot(trainPredictPlot)
     plt.plot(testPredictPlot)
     plt.show()
-
-    st.header(f"After learning, the learning result..(green and orange line)\n {company_name}")
     st.pyplot(fig)
     plt.clf()
     # demonstrate prediction for next 10 days
@@ -180,17 +313,19 @@ if option == 'Start_Analysis_DL':
 
     day_new = np.arange(1, 101)
     day_pred = np.arange(101, 131)
-
     dff = plt
+    st.write('Your next 30 day stock close price')
+    dff.title('Model')
+    dff.xlabel('Date')
+    dff.ylabel('Close Price TWD ($)')
     dff.plot(day_new, scaler.inverse_transform(df1[len(df1)-100:]))
     dff.plot(day_pred, scaler.inverse_transform(lst_output))
-    st.write('Your next 10 day stock close price in predicion 30 day')
+    dff.legend(['Train', 'Predictions'], loc='upper left')
     st.write(scaler.inverse_transform(lst_output))
     st.pyplot(dff)
-
+    st.header(f"The orange line is your prediction for 30 days\n {company_name}")
     df3 = df1.tolist()
     df3.extend(lst_output)
-    st.header(f"The orange line is your prediction for 30 days\n {company_name}")
     st.line_chart(df3[1200:])
 
     df3 = scaler.inverse_transform(df3).tolist()
