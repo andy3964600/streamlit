@@ -35,12 +35,13 @@ def User_input():
 symbol, start, end = User_input()
 tickerData = yf.Ticker(symbol)
 tickerDF = tickerData.history(start="%s" % start)
+tickerDF = tickerData.history(end="%s" % end)
 company_name = symbol
 start = pd.to_datetime(start)
 end = pd.to_datetime(end)
 # Read data
 data = yf.download(symbol, start, end)
-
+st.write(data)
 if option == 'Tech_Analysis':
 
     # Adjusted Close Price
@@ -49,26 +50,26 @@ if option == 'Tech_Analysis':
 
     # Volume
     st.header(f"Adjusted Close Price\n {company_name}")
-    st.bar_chart(tickerDF.Volume)
+    st.bar_chart(data.Volume)
 
 # dataframe
     st.header(f"DataFrame!\n {company_name}")
-    st.write(tickerDF.tail())
+    st.write(data.tail())
 # KBar
     st.header(f"KBar\n {company_name}")
-    tickerDF.index = tickerDF.index.format(formatter=lambda x: x.strftime('%Y-%m-%d'))
+    data.index = data.index.format(formatter=lambda x: x.strftime('%Y-%m-%d'))
 
     KF = plt.figure(figsize=(32, 15), dpi=160)
 
     ax = KF.add_subplot(1, 1, 1)
-    ax.set_xticks(range(0, len(tickerDF.index), 10))
-    ax.set_xticklabels(tickerDF.index[::10], rotation=90)
-    mpf.candlestick2_ochl(ax, tickerDF['Open'], tickerDF['Close'], tickerDF['High'],
-                          tickerDF['Low'], width=0.6, colorup='r', colordown='g', alpha=0.6)
+    ax.set_xticks(range(0, len(data.index), 10))
+    ax.set_xticklabels(data.index[::10], rotation=90)
+    mpf.candlestick2_ochl(ax, data['Open'], data['Close'], data['High'],
+                          data['Low'], width=0.6, colorup='r', colordown='g', alpha=0.6)
     st.pyplot(KF)
     # Bollinger Bands
     st.header(f"Bollinger Bands\n {company_name}")
-    qf = cf.QuantFig(tickerDF, title='BB For 20MA', legend='top', name='GS')
+    qf = cf.QuantFig(data, title='BB For 20MA', legend='top', name='GS')
     qf.add_bollinger_bands()
     fig = qf.iplot(asFigure=True)
     st.plotly_chart(fig)
@@ -76,7 +77,7 @@ if option == 'Tech_Analysis':
 if option == 'Start_Analysis_DL':
     st.text('*Calculating the Deeplearning for prediction the stock close....Plz wait*')
 # Predict forecast with Prophet.
-    df1 = tickerDF.reset_index()['Close']
+    df1 = data.reset_index()['Close']
 
 
 # LSTM are sensitive to the scale of the data
@@ -179,10 +180,11 @@ if option == 'Start_Analysis_DL':
 
     day_new = np.arange(1, 101)
     day_pred = np.arange(101, 131)
-    st.write('Your next 10 day stock close price in predicion 30 day')
+
     dff = plt
     dff.plot(day_new, scaler.inverse_transform(df1[len(df1)-100:]))
     dff.plot(day_pred, scaler.inverse_transform(lst_output))
+    st.write('Your next 10 day stock close price in predicion 30 day')
     st.write(scaler.inverse_transform(lst_output))
     st.pyplot(dff)
 
