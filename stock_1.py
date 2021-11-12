@@ -150,7 +150,7 @@ if option == 'DL(LSTM) Prediction For 1 week':
     plt.clf()
     # demonstrate prediction for next 10 days
     st.write(len(test_data))
-    st.write('Now, Calculate to prediction for next 10 days... plz wait')
+    st.write('Now, Calculate to prediction for next 30 days... plz wait')
     x_input = test_data[len(test_data)-30:].reshape(1, -1)
 
     temp_input = list(x_input)
@@ -185,6 +185,7 @@ if option == 'DL(LSTM) Prediction For 1 week':
 
     day_new = np.arange(1, 31)
     day_pred = np.arange(31, 36)
+    st.header(f"The prediction in 5 days : \n {company_name}")
     dff = plt
     st.header('Your next 5 day stock close price')
     dff.title('Model')
@@ -195,7 +196,6 @@ if option == 'DL(LSTM) Prediction For 1 week':
     dff.legend(['Train', 'Predictions'], loc='upper left')
     st.write(scaler.inverse_transform(lst_output))
     st.pyplot(dff)
-    st.header(f"The orange line is your prediction for 5 days\n {company_name}")
     df3 = df1.tolist()
     df3.extend(lst_output)
     st.line_chart(df3[1200:])
@@ -278,7 +278,7 @@ if option == 'DL(LSTM) Prediction For 1 month':
     plt.clf()
     # demonstrate prediction for next 10 days
     st.write(len(test_data))
-    st.write('Now, Calculate to prediction for next 10 days... plz wait')
+    st.write('Now, Calculate to prediction for next 30 days... plz wait')
     x_input = test_data[len(test_data)-100:].reshape(1, -1)
 
     temp_input = list(x_input)
@@ -313,8 +313,8 @@ if option == 'DL(LSTM) Prediction For 1 month':
 
     day_new = np.arange(1, 101)
     day_pred = np.arange(101, 131)
+    st.header(f"The prediction in 30 days : \n {company_name}")
     dff = plt
-    st.write('Your next 30 day stock close price')
     dff.title('Model')
     dff.xlabel('Date')
     dff.ylabel('Close Price TWD ($)')
@@ -323,7 +323,6 @@ if option == 'DL(LSTM) Prediction For 1 month':
     dff.legend(['Train', 'Predictions'], loc='upper left')
     st.write(scaler.inverse_transform(lst_output))
     st.pyplot(dff)
-    st.header(f"The orange line is your prediction for 30 days\n {company_name}")
     df3 = df1.tolist()
     df3.extend(lst_output)
     st.line_chart(df3[1200:])
