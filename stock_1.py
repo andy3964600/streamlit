@@ -11,14 +11,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 from sklearn.metrics import mean_squared_error
+import math
 yf.pdr_override()
 plt.style.use('seaborn')
-
-
-st.sidebar.header('**Options**')
-today = datetime.date.today()
-option = st.sidebar.selectbox(
-    "Deeplearning", ('Tech_Analysis', 'DL(LSTM) Prediction For 1 week', 'DL(LSTM) Prediction For 1 month'))
 # take 3d inofrmation
 
 
@@ -38,6 +33,12 @@ start = pd.to_datetime(start)
 end = pd.to_datetime(end)
 # Read data
 data = yf.download(symbol, start, end)
+
+st.sidebar.header('**Options**')
+today = datetime.date.today()
+option = st.sidebar.selectbox(
+    "Deeplearning", ('Tech_Analysis', 'DL(LSTM) Prediction For Next Day',  'DL(LSTM) Prediction For 1 week', 'DL(LSTM) Prediction For 1 month'))
+
 if option == 'Tech_Analysis':
     st.title("""
     # DAS(Data Analysis Stock) Overview
@@ -73,7 +74,80 @@ if option == 'Tech_Analysis':
     qf.add_bollinger_bands()
     fig = qf.iplot(asFigure=True)
     st.plotly_chart(fig)
+if option == 'DL(LSTM) Prediction For Next Day':
+    st.title("""
+    DL model(LSTM) Prediction For Next Day
+    """)
+    DF = data.filter(['Close'])
+    DFset = DF.values
+    # Create the train/test dataset
+    train_set_len = math.ceil(len(DFset) * 0.75)
+    Normalize_scalar = MinMaxScaler(feature_range=(0.0, 1.0))
+    df1 = Normalize_scalar.fit_transform(np.array(DFset).reshape(-1, 1))
+    train_data, test_data = df1[0:train_set_len, :], df1[train_set_len:len(df1), :1]
+    x_train = []
+    y_train = []
 
+    for i in range(20, len(train_data)):
+        x_train.append(train_data[i-20:i, 0])
+        y_train.append(train_data[i, 0])
+    x_train, y_train = np.array(x_train), np.array(y_train)
+    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
+    x_test = []
+    y_test = []
+
+    for i in range(20, len(test_data)):
+        x_test.append(test_data[i-20:i, 0])
+        y_test.append(test_data[i, 0])
+    x_test, y_test = np.array(x_test),  np.array(y_test)
+    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+    # Create the stocl LSTM NN
+    model = Sequential()
+    model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+    model.add(LSTM(50, return_sequences=True))
+    model.add(LSTM(50))
+    model.add(Dense(25))
+    model.add(Dense(1))
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    model.summary()
+    model.fit(x_train, y_train, batch_size=64, epochs=80, verbose=1)
+    # Get the models prdicted price values
+    pred = model.predict(x_test)
+    pred = Normalize_scalar.inverse_transform(pred)
+    train = DF[: train_set_len+20]
+    Val = DF[train_set_len+20:]
+    Val['Predictions'] = pred
+    # Visualize the data
+    st.header(f"Your trained model for validation : \n {company_name}")
+    fig = plt
+    plt.figure(figsize=(16, 8))
+    plt.title('Model')
+    plt.xlabel('Date')
+    plt.ylabel('Close Price TWD ($)')
+    plt.plot(train['Close'])
+    plt.plot(Val[['Close', 'Predictions']])
+    plt.legend(['Train', 'Val', 'Predictions'], loc='upper left')
+    plt.show()
+    st.pyplot(fig)
+    plt.clf()
+    # Create the new DF
+    new_df = data.filter(['Close'])
+    # Get last 60 day's closing price
+    last_month = new_df[-20:].values
+    last_month_scaled = Normalize_scalar.transform(last_month)
+    x_test = []
+    x_test.append(last_month_scaled)
+    x_test = np.array(x_test)
+    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+    # prediciton
+    pred_price = model.predict(x_test)
+    pred_price = Normalize_scalar.inverse_transform(pred_price)
+    st.subheader('The prediction of Close price on next day= %s' %
+                 pred_price)
+# prediciton
+pred_price = model.predict(x_test)
+pred_price = Normalize_scalar.inverse_transform(pred_price)
+print('The prediction of Close price on next day= %s' % pred_price)
 if option == 'DL(LSTM) Prediction For 1 week':
     st.title("""
     DL model(LSTM) Prediction for 1 week
