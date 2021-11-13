@@ -9,4 +9,3 @@ mplfinance
 sklearn
 tensorflow
 keras
-math
