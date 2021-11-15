@@ -44,7 +44,7 @@ option = st.sidebar.selectbox(
 if option == 'Tech_Analysis':
     st.title("""
     # DAS(Data Analysis Stock) Overview
-    Shown below are the **BB**, **KBar**, **Close**, **Volume** of yours input!
+    Shown below are the **Bollinger Bands**, **KBar**, **Close**, **Volume**,  **Moving Average**, **MACD** of yours input!
     """)
 
     # Adjusted Close Price
