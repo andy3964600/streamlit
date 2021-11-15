@@ -12,6 +12,8 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 from sklearn.metrics import mean_squared_error
 import math
+import plotly.graph_objs as go
+import plotly.express as px
 yf.pdr_override()
 plt.style.use('seaborn')
 # take 3d inofrmation
@@ -20,7 +22,7 @@ plt.style.use('seaborn')
 def User_input():
     ticker = st.sidebar.text_input("Ticker", '2376.TW')
     start_date = st.sidebar.date_input("Start date", datetime.date(2019, 1, 1))
-    end_date = st.sidebar.date_input("End date", datetime.date(2021, 11, 10))
+    end_date = st.sidebar.date_input("End date", datetime.date(2021, 11, 13))
     return ticker, start_date, end_date
 
 
@@ -46,12 +48,28 @@ if option == 'Tech_Analysis':
     """)
 
     # Adjusted Close Price
-    st.header(f"Adjusted Close Price\n {company_name}")
-    st.line_chart(data['Adj Close'])
+    st.header(f"Close Price\n {company_name}")
+    trace0 = go.Scatter(x=data.index, y=data.Close, name='Close price')
+    trace1 = go.Scatter(x=data.index, y=data.Low, name='Low')
+    trace2 = go.Scatter(x=data.index, y=data.High, name='High')
+    data_12 = [trace0, trace1, trace2]
+    figure = go.Figure(data=data_12)
+    figure.update_layout(
+        autosize=False,
+        width=800,
+        height=650)
+    figure.update_layout(xaxis_rangeslider_visible=True)
+    st.plotly_chart(figure)
 
     # Volume
-    st.header(f"Adjusted Close Price\n {company_name}")
-    st.bar_chart(data.Volume)
+    st.header(f"Volume Graph\n {company_name}")
+    bar = px.bar(data, x=data.index, y='Volume')
+    bar.update_layout(
+        autosize=False,
+        width=800,
+        height=650)
+    bar.update_layout(xaxis_rangeslider_visible=True)
+    st.plotly_chart(bar)
 
 # dataframe
     st.header(f"DataFrame!\n {company_name}")
@@ -59,21 +77,24 @@ if option == 'Tech_Analysis':
 # KBar
     st.header(f"KBar\n {company_name}")
     data.index = data.index.format(formatter=lambda x: x.strftime('%Y-%m-%d'))
+    fig = go.Figure(data=[go.Candlestick(x=data.index,
+                    open=data['Open'], high=data['High'],
+                    low=data['Low'], close=data['Close'], increasing_line_color='red', decreasing_line_color='green'
+                    )])
+    fig.update_layout(
+        autosize=False,
+        width=800,
+        height=650)
+    fig.update_layout(xaxis_rangeslider_visible=True)
 
-    KF = plt.figure(figsize=(16, 8))
-
-    ax = KF.add_subplot(1, 1, 1)
-    ax.set_xticks(range(0, len(data.index), 10))
-    ax.set_xticklabels(data.index[::10], rotation=90)
-    mpf.candlestick2_ochl(ax, data['Open'], data['Close'], data['High'],
-                          data['Low'], width=0.6, colorup='r', colordown='g', alpha=0.6)
-    st.pyplot(KF)
+    st.plotly_chart(fig)
     # Bollinger Bands
     st.header(f"Bollinger Bands\n {company_name}")
     qf = cf.QuantFig(data, title='BB For 20MA', legend='top', name='GS')
     qf.add_bollinger_bands()
-    fig = qf.iplot(asFigure=True)
-    st.plotly_chart(fig)
+    qf = qf.iplot(asFigure=True)
+    qf.update_layout(xaxis_rangeslider_visible=True)
+    st.plotly_chart(qf, use_container_width=True)
 if option == 'DL(LSTM) Prediction For Next Day':
     st.title("""
     DL model(LSTM) Prediction For Next Day
@@ -144,10 +165,6 @@ if option == 'DL(LSTM) Prediction For Next Day':
     pred_price = Normalize_scalar.inverse_transform(pred_price)
     st.subheader('The prediction of Close price on next day= %s' %
                  pred_price)
-# prediciton
-pred_price = model.predict(x_test)
-pred_price = Normalize_scalar.inverse_transform(pred_price)
-print('The prediction of Close price on next day= %s' % pred_price)
 if option == 'DL(LSTM) Prediction For 1 week':
     st.title("""
     DL model(LSTM) Prediction for 1 week
