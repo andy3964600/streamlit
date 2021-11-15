@@ -88,13 +88,70 @@ if option == 'Tech_Analysis':
     fig.update_layout(xaxis_rangeslider_visible=True)
 
     st.plotly_chart(fig)
-    # Bollinger Bands
+# Bollinger Bands
     st.header(f"Bollinger Bands\n {company_name}")
     qf = cf.QuantFig(data, title='BB For 20MA', legend='top', name='GS')
     qf.add_bollinger_bands()
     qf = qf.iplot(asFigure=True)
     qf.update_layout(xaxis_rangeslider_visible=True)
     st.plotly_chart(qf, use_container_width=True)
+# MA
+    st.header(f"Moving Average \n {company_name}")
+    # MA5
+    data['MA5'] = data['Close'].rolling(window=5).mean()
+    # MA10
+    data['MA10'] = data['Close'].rolling(window=10).mean()
+    # MA20
+    data['MA20'] = data['Close'].rolling(window=20).mean()
+    # MA60
+    data['MA60'] = data['Close'].rolling(window=60).mean()
+    # MA120
+    data['MA120'] = data['Close'].rolling(window=120).mean()
+    # MA240
+    data['MA240'] = data['Close'].rolling(window=240).mean()
+    trace0 = go.Scatter(x=data.index, y=data.Close, name='Close')
+    trace1 = go.Scatter(x=data.index, y=data.MA5, name='MA5')
+    trace2 = go.Scatter(x=data.index, y=data.MA10, name='MA10')
+    trace3 = go.Scatter(x=data.index, y=data.MA20, name='MA20')
+    trace4 = go.Scatter(x=data.index, y=data.MA60, name='MA60')
+    trace5 = go.Scatter(x=data.index, y=data.MA120, name='MA120')
+    trace6 = go.Scatter(x=data.index, y=data.MA240, name='MA240')
+    data_MA = [trace0, trace1, trace2, trace3, trace4, trace5, trace6]
+    figure = go.Figure(data=data_MA)
+    figure.update_layout(xaxis_rangeslider_visible=True)
+    figure.update_layout(
+        autosize=False,
+        width=800,
+        height=650)
+    st.plotly_chart(figure, use_container_width=True)
+    # MACD
+    st.header(f"MACD \n {company_name}")
+    # Creating the MACD
+    # Creation short term exponential moving average (EMA)
+    EMA_12 = data.Close.ewm(span=12, adjust=False).mean()
+    # Creation long term exponential moving average (EMA)
+    EMA_26 = data.Close.ewm(span=26, adjust=False).mean()
+    # Calculate the DIF
+    DIF = EMA_12 - EMA_26
+    # Calcualte the DEM
+    DEM = DIF.ewm(span=9, adjust=False).mean()
+    # Calculate the OSC
+    OSC = DIF - DEM
+    # Add the column for MACD
+    data['DIF'] = DIF
+    data['DEM'] = DEM
+    data['OSC'] = OSC
+    DIF_plot = go.Scatter(x=data.index, y=data.DIF, name='DIF')
+    DEM_plot = go.Scatter(x=data.index, y=data.DEM, name='DEM')
+    OSC_plot = go.Bar(x=data.index, y=data.OSC, name='OSC')
+    data_MACD = [DIF_plot, DEM_plot, OSC_plot]
+    Fig = go.Figure(data_MACD)
+    Fig.update_layout(xaxis_rangeslider_visible=True)
+    Fig.update_layout(
+        autosize=False,
+        width=800,
+        height=650)
+    st.plotly_chart(Fig, use_container_width=True)
 if option == 'DL(LSTM) Prediction For Next Day':
     st.title("""
     DL model(LSTM) Prediction For Next Day
