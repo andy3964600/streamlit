@@ -28,7 +28,7 @@ sector = df.groupby('GICS Sector')
 # Sidebar - Sector selection
 sorted_selected = sorted(df['GICS Sector'].unique())
 
-selectbox_sorted = st.sidebar.multiselect('Which sector you want select', sorted_selected)
+selectbox_sorted = st.sidebar.multiselect('Which sector you want select', sorted_selected,default=["Communication Services"])
 
 # filter the data
 
