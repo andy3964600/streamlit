@@ -4,6 +4,8 @@ import numpy as np
 import yfinance as yf
 import plotly.graph_objs as go
 
+
+st.set_page_config(layout="wide")
 st.title('S&P 500 App')
 
 st.markdown("""
@@ -53,16 +55,16 @@ data = yf.download(
     threads=True,
     proxy=None
 )
-
+selectbox_sorted_Symbol = st.sidebar.multiselect('ticker?', select_sector.Symbol)
 # Plot Closing Price of Query Symbol
 
 
 def plotly_plot(symbol):
     df = pd.DataFrame(data[symbol].Close)
     df['Date'] = df.index
-    fig = go.Scatter(x=df.index, y=df.Close)
+    Fig = go.Scatter(x=df.index, y=df.Close)
     layout = go.Layout(title=symbol)
-    Fig = go.Figure(data=fig, layout=layout)
+    Fig = go.Figure(data=Fig, layout=layout)
     Fig.update_layout(xaxis_rangeslider_visible=True)
     Fig.update_layout(
         autosize=False,
@@ -71,9 +73,7 @@ def plotly_plot(symbol):
     return st.plotly_chart(Fig)
 
 
-num_company = st.sidebar.slider('Number of Companies', 1, len(select_sector.Symbol))
-
-if st.button('Show Plots'):
-    st.header('Stock Closing Price')
-    for i in list(select_sector.Symbol)[:num_company]:
-        plotly_plot(i)
+# if st.sidebar.button('Show Plots'):
+st.header('Stock Closing Price')
+for i in list(selectbox_sorted_Symbol)[:len(selectbox_sorted_Symbol)]:
+    plotly_plot(i)
