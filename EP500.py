@@ -71,7 +71,7 @@ def plotly_plot(symbol):
     return st.plotly_chart(Fig)
 
 
-num_company = st.sidebar.slider('Number of Companies', 1, 5)
+num_company = st.sidebar.slider('Number of Companies', 1, len(select_sector.Symbol))
 
 if st.button('Show Plots'):
     st.header('Stock Closing Price')
