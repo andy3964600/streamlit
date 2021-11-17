@@ -10,3 +10,5 @@ sklearn
 tensorflow
 keras
 plotly
+base64
+seaborn
