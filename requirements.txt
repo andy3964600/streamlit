@@ -9,3 +9,4 @@ mpl_finance
 sklearn
 tensorflow
 keras
+plotly
